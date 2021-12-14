@@ -1,7 +1,6 @@
 #include "MUXController.hpp"
 #include <avr/io.h>
 #include <assert.h>
-#include <avr/io.h>
 #include <avr/interrupt.h>
 
 volatile uint16_t adc_data = 0;
