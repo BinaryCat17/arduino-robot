@@ -1,20 +1,16 @@
 #pragma once
+#include <stdint.h>
 
-#include "PinMap.hpp"
-
-enum class Timer {
-    T3P235,
-};
-
-class TimerMap {
+class Timer
+{
 public:
-    static void fillFactor(Pin pin, float factor);
+    void start();
 
-    static void enable(Timer t, uint16_t freq);
+    void interval(uint32_t ms);
+
+    bool event();
 
 private:
-    static TimerMap &instance();
-
-    bool enabledPins[static_cast<int>(Pin::Count)] = {};
-    bool timerTops[3] = {};
+    uint16_t m_prev = 0;
+    uint16_t m_interval = 0;
 };

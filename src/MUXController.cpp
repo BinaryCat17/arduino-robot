@@ -2,6 +2,7 @@
 #include <avr/io.h>
 #include <assert.h>
 #include <avr/interrupt.h>
+#include "App.hpp"
 
 volatile uint16_t adc_data = 0;
 volatile uint16_t data_accepted = false;
@@ -14,6 +15,8 @@ ISR(ADC_vect) {
 void MUXController::enable() {
     static bool isEnabled = false;
     if (!isEnabled) {
+        isEnabled = true;
+        App::println("MUXController enabled");
         // запускаем АЦП
         ADCSRA = 1 << ADEN;
         // запускаем преобразование
