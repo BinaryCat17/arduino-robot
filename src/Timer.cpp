@@ -1,20 +1,18 @@
 #include "Timer.hpp"
 #include "HardwareTimer.hpp"
 
-void Timer::start() {
+void Timer::start(uint32_t interval, uint32_t delay) {
     HardwareTimer::enable();
-}
-
-void Timer::interval(uint32_t ms) {
-    m_interval = ms;
+    m_delay = HardwareTimer::millis() + delay;
+    m_interval = interval;
+    m_cnt = 0;
 }
 
 bool Timer::event() {
     uint32_t val = HardwareTimer::millis();
-
-
-    if (val - m_prev > m_interval) {
-        m_prev = val;
+    if(val >= m_delay + m_cnt * m_interval)
+    {
+        ++m_cnt;
         return true;
     }
 

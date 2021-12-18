@@ -10,19 +10,20 @@
 class RobotApp : public CustomApp {
 public:
     void init() override {
-
-        light.interval(1000);
-        light.start();
-
-        drive.interval(1);
-        drive.start();
-
-        PinMap::direction(Pin::D13, PinDir::Out);
         App::println("Starting");
 
+        // настраиваем диод на выход
+        PinMap::direction(Pin::D13, PinDir::Out);
+
+        // мигаем диодом раз в пол секунды
+        lightOn.start(1000, 0);
+        lightOff.start(1000, 500);
+
+        // раз в 10 мс запускаем регулятор
+        drive.start(10);
+
+        // базовая скорость двигателей
         Driver::speed(0.25);
-        Driver::enable();
-        Driver::calibrate();
     }
 
     void loop() override {
@@ -47,9 +48,9 @@ public:
     }
 
 private:
-    Timer light;
+    Timer lightOn;
+    Timer lightOff;
     Timer drive;
-    bool flag = false;
 };
 
 int main() {
