@@ -23,9 +23,9 @@ void App::start(CustomApp *app) {
     Serial.begin(9600);
 #endif
 
+    App::println("Application started");
     app->init();
 
-    App::println("Application started");
 
     while (true) {
         app->loop();

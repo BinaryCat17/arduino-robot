@@ -10,11 +10,11 @@ public:
 
     int diverge(uint8_t sensor);
 
-    uint16_t avg(uint8_t sensor) const {
+    uint32_t avg(uint8_t sensor) const {
         return data[sensor].avgSum / cnt;
     }
 
-    uint16_t avgDif(uint8_t sensor) const {
+    uint32_t avgDif(uint8_t sensor) const {
         return data[sensor].avgDifSum / cnt;
     }
 
@@ -26,7 +26,8 @@ public:
         int16_t divCnt = 0;
         Timer divTimer;
         bool div = false;
-    } data[2];
+        bool res = false;
+    } data[2] = {};
 };
 
 class Driver {
@@ -40,6 +41,12 @@ public:
     static void drive();
 
 private:
+    static void enable();
+
+    static void speed1(float v);
+
+    static void speed2(float v);
+
     static Driver &instance();
 
     bool inited = false;
@@ -47,6 +54,7 @@ private:
     SensorColor white;
     SensorColor gray;
     SensorColor black;
+    int32_t cnt = 0;
 
     float m_robotSpeed = 0.3;
 };

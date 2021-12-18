@@ -1,16 +1,11 @@
 #include "Driver.hpp"
 #include "Timer.hpp"
 #include "PinMap.hpp"
-#include "Arduino.h"
-
-#define ENABLE_DEBUG
-
 #include "App.hpp"
 
 class RobotApp : public CustomApp {
 public:
     void init() override {
-        App::println("Starting");
 
         // настраиваем диод на выход
         PinMap::direction(Pin::D13, PinDir::Out);
@@ -19,31 +14,27 @@ public:
         lightOn.start(1000, 0);
         lightOff.start(1000, 500);
 
-        // раз в 10 мс запускаем регулятор
-        drive.start(10);
+        // раз в 1 мс запускаем регулятор
+        drive.start(1);
 
         // базовая скорость двигателей
         Driver::speed(0.25);
+        // Driver::calibrate();
     }
 
     void loop() override {
         // подаём признаки жизни
-        if (light.event()) {
-            if (flag) {
-                flag = false;
-                PinMap::write(Pin::D13, PinValue::High);
-                App::println("light on");
-            } else {
-                flag = true;
-                PinMap::write(Pin::D13, PinValue::Low);
-                App::println("light off");
-            }
+        if (lightOn.event()) {
+            PinMap::write(Pin::D13, PinValue::High);
         }
 
+        if (lightOff.event()) {
+            PinMap::write(Pin::D13, PinValue::Low);
+        }
 
+        Driver::correct();
         if (drive.event()) {
             // едем
-            Driver::correct();
         }
     }
 

@@ -22,6 +22,8 @@ enum class Pin {
     D3,
     D5,
     D13,
+    D49,
+    D51,
     Count,
 };
 
@@ -36,7 +38,21 @@ public:
 private:
     static uint8_t convertPin(Pin pin);
 
-    static void setBit(volatile uint8_t& port, Pin pin, PinDir val);
+    inline static void setBit(volatile uint8_t &port, Pin pin, PinDir val) {
+        if (val == PinDir::Out) {
+            port |= (1 << convertPin(pin));
+        } else {
+            port &= ~(1 << convertPin(pin));
+        }
+    }
 
-    static PinValue getBit(volatile uint8_t &port, Pin pin);
+    inline static PinValue getBit(volatile uint8_t &port, Pin pin) {
+        if(port & (1 << convertPin(pin)))
+        {
+            return PinValue::High;
+        } else
+        {
+            return PinValue::Low;
+        }
+    }
 };

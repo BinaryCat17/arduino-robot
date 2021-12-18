@@ -42,7 +42,7 @@ void PWMGen::enable(PWMTimer t, uint16_t freq) {
             TCCR3A |= (1 << COM3B1) | (1 << COM3C1);
 
             if (F_CPU / freq <= 65535) {
-                App::println("Prescaling 1");
+                //App::println("Prescaling 1");
                 TCCR3B |= 1 << CS30;
                 ICR3 = F_CPU / freq;
                 instance().timerTops[2] = F_CPU / freq;
