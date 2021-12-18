@@ -57,6 +57,7 @@ void MUXController::freq(MUXFreq freq) {
 }
 
 uint16_t MUXController::read(Pin channel) {
+    // переключаем канал пультиплексор
     switch (channel) {
         case Pin::A0:
             ADMUX &= ~((1 << MUX0) | (1 << MUX1) | (1 << MUX2) | 1 << MUX3 | (1 << MUX4) |
@@ -78,6 +79,7 @@ uint16_t MUXController::read(Pin channel) {
             assert(0 && "selected pin is not analog");
     }
 
+    // прежде чем получить значение - на всякий случай ждём его получение
     while (!data_accepted);
     data_accepted = false;
 

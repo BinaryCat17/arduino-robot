@@ -5,6 +5,7 @@
 #include "avr/interrupt.h"
 
 void PWMGen::fillFactor(Pin pin, float factor) {
+    // чтобы не изменять режим пина лишний раз
     if (!instance().enabledPins[static_cast<int>(pin)]) {
         App::print("Pin enabled: ");
         App::println(static_cast<uint32_t>(pin));
@@ -15,6 +16,7 @@ void PWMGen::fillFactor(Pin pin, float factor) {
     App::print("Fill factor: ");
     App::println(factor);
 
+    // можно настраивать коэффициент заполнения на каждой ножке отдельно
     switch (pin) {
         case Pin::D2:
             OCR3B = static_cast<uint16_t>(instance().timerTops[2] * factor);
@@ -34,7 +36,6 @@ void PWMGen::enable(PWMTimer t, uint16_t freq) {
     cli();
     switch (t) {
         case PWMTimer::T3P235:
-
             // выбираем режим работы таймера Fast PWM (TOP = ICR3)
             TCCR3A = (1 << WGM31);
             TCCR3B = (1 << WGM32) | (1 << WGM33);
@@ -42,7 +43,7 @@ void PWMGen::enable(PWMTimer t, uint16_t freq) {
             TCCR3A |= (1 << COM3B1) | (1 << COM3C1);
 
             if (F_CPU / freq <= 65535) {
-                //App::println("Prescaling 1");
+                App::println("Prescaling 1");
                 TCCR3B |= 1 << CS30;
                 ICR3 = F_CPU / freq;
                 instance().timerTops[2] = F_CPU / freq;
@@ -52,10 +53,12 @@ void PWMGen::enable(PWMTimer t, uint16_t freq) {
                 ICR3 = F_CPU / freq / 8;
                 instance().timerTops[2] = F_CPU / freq / 8;
             } else {
+                // нужно добавить еще предделители
                 assert(0 && "invalid frequency");
             }
             break;
         default:
+            // нужно добавить еще таймеров
             assert(0 && "invalid timer pin");
     }
     sei();
