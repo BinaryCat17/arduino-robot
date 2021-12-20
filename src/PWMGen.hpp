@@ -53,7 +53,7 @@ public:
     template<Pin p>
     static void fillFactor(uint16_t factor)
     {
-        auto val = static_cast<uint16_t>(icr_val * factor / 1000);
+        auto const val = static_cast<uint16_t>(icr_val * factor / 1000);
 
         if constexpr(p == Pin::D2 && t == PWMTimer::T3P235)
         {

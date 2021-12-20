@@ -3,12 +3,14 @@
 #include "MUXController.hpp"
 #include "Timer.hpp"
 #include "PWMGen.hpp"
-
-// const float robotKp = 0.5;
+#include "PIDRegulator.hpp"
 
 class Driver {
 public:
-    static void enable();
+    static void enable(int16_t Kp_, int16_t Ki_, int16_t Kd_)
+    {
+        reg.start(Kp_, Ki_, Kd_, 0, rs - 1000, 1000 - rs);
+    }
 
     static void speed(int32_t speed)
     {
@@ -34,13 +36,6 @@ public:
 private:
     template<Pin engine, Pin control>
     static void engineSpeed(int16_t speed) {
-        // проверяем на выход из допустимого диапазона
-        if (speed > 1000) {
-            speed = 1000;
-        } else if (speed < -1000) {
-            speed = -1000;
-        }
-
         if (speed > 0) {
             // крутим вперёд
             PWMGen<PWMTimer::T3P235>::fillFactor<engine>(speed);
@@ -63,4 +58,5 @@ private:
     }
 
     static int16_t rs;
+    static PIDRegulator reg;
 };

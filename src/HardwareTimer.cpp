@@ -34,7 +34,6 @@ void HardwareTimer::enable() {
     // 128 prescaling
     TCCR2B |= (1 << CS22) | (1 << CS20);
 
-
     TCNT1 = 0u;
     OCR2A = ctc_match_overflow;
 }

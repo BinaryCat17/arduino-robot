@@ -14,7 +14,7 @@ public:
 
     bool event()
     {
-        uint32_t val = HardwareTimer::millis();
+        uint32_t const val = HardwareTimer::millis();
         if(val >= m_delay + m_cnt * m_interval)
         {
             ++m_cnt;

@@ -4,7 +4,6 @@
 #include "PWMGen.hpp"
 #include "App.hpp"
 
-
 void Driver::enable() {
     static bool enabled = false;
     if(!enabled)
@@ -28,3 +27,4 @@ void Driver::enable() {
 }
 
 int16_t Driver::rs = 300;
+PIDRegulator Driver::reg = {};

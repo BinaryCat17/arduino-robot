@@ -19,7 +19,6 @@ enum class Pin {
     D13,
     D49,
     D51,
-    Count,
 };
 
 class PinMap {
