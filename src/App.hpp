@@ -1,43 +1,69 @@
 #pragma once
 #include "stdint.h"
 
-class CustomApp {
+//#define ENABLE_SERIAL
+#if defined(ENABLE_DEBUG)
+#include "Arduino.h"
+#include "avr8-stub.h"
+#endif
+
+#if defined(ENABLE_SERIAL)
+#include <HardwareSerial.h>
+#endif
+
+class App {
 public:
-    virtual void init() = 0;
+    template<typename T>
+    static void print(T v)
+    {
+#if not defined(ENABLE_DEBUG) and defined(ENABLE_SERIAL)
+        Serial.print(v);
+#endif
+    }
 
-    virtual void loop() = 0;
-};
+    template<typename T, typename... Types>
+    static void print(T v, Types... args)
+    {
+        print(v);
+        print(args...);
+    }
 
-class App
-{
-public:
-    static void start(CustomApp* app);
+    template<typename T>
+    static void println(T v)
+    {
+#if not defined(ENABLE_DEBUG) and defined(ENABLE_SERIAL)
+        Serial.println(v);
+#endif
+    }
 
-    static void print(char const* msg);
+    template<typename T, typename... Types>
+    static void println(T v, Types... args)
+    {
+        print(v);
+        println(args...);
+    }
 
-    static void print(float msg);
+    template<typename T>
+    static void start() {
+#if defined(ENABLE_DEBUG)
+        debug_init();
+#endif
 
-    static void print(uint32_t msg);
+#if defined(ENABLE_SERIAL) and not defined(ENABLE_DEBUG)
+        Serial.begin(9600);
+#endif
 
-    static void print(uint16_t msg);
+        App::println("Starting...");
 
-    static void print(int32_t msg);
+        T app;
+        app.init();
 
-    static void print(int16_t msg);
-
-    static void println(char const* msg);
-
-    static void println(float msg);
-
-    static void println(uint32_t msg);
-
-    static void println(uint16_t msg);
-
-    static void println(int32_t msg);
-
-    static void println(int16_t msg);
-
-private:
-    bool m_debug;
+        while (true) {
+            app.loop();
+#if defined(ENABLE_DEBUG)
+            if (serialEventRun) serialEventRun();
+#endif
+        }
+    }
 };
 

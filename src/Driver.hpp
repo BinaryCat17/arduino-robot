@@ -1,60 +1,66 @@
 #pragma once
 
-#include "stdint.h"
-#include "math.h"
+#include "MUXController.hpp"
 #include "Timer.hpp"
+#include "PWMGen.hpp"
 
-class SensorColor {
-public:
-    void read();
-
-    int diverge(uint8_t sensor);
-
-    uint32_t avg(uint8_t sensor) const {
-        return data[sensor].avgSum / cnt;
-    }
-
-    uint32_t avgDif(uint8_t sensor) const {
-        return data[sensor].avgDifSum / cnt;
-    }
-
-public:
-    uint32_t cnt = 0;
-    struct SensorData {
-        uint32_t avgSum = 0;
-        uint32_t avgDifSum = 0;
-        int16_t divCnt = 0;
-        Timer divTimer;
-        bool div = false;
-        bool res = false;
-    } data[2] = {};
-};
+// const float robotKp = 0.5;
 
 class Driver {
 public:
-    static void speed(float speed);
-
-    static void calibrate();
-
-    static void correct();
-
-    static void drive();
-
-private:
     static void enable();
 
-    static void speed1(float v);
+    static void speed(int32_t speed)
+    {
+        rs = speed;
+    }
 
-    static void speed2(float v);
+    inline static void drive()
+    {
+        auto s1 = (int16_t) MUXController::read<Pin::A0>();
+        auto s2 = (int16_t) MUXController::read<Pin::A1>();
 
-    static Driver &instance();
+        int16_t cur = s1 - s2;
 
-    bool inited = false;
+        int16_t err = 0 - cur;
+        // int16_t out = robotKp * err;
+        int16_t out = err / 2;
 
-    SensorColor white;
-    SensorColor gray;
-    SensorColor black;
-    int32_t cnt = 0;
+        App::println("S ", s1, " ", s2, " F ", rs - out, " ", rs + out);
+        speedL((rs - out));
+        speedR((rs + out));
+    }
 
-    float m_robotSpeed = 0.3;
+private:
+    template<Pin engine, Pin control>
+    static void engineSpeed(int16_t speed) {
+        // проверяем на выход из допустимого диапазона
+        if (speed > 1000) {
+            speed = 1000;
+        } else if (speed < -1000) {
+            speed = -1000;
+        }
+
+        if (speed > 0) {
+            // крутим вперёд
+            PWMGen<PWMTimer::T3P235>::fillFactor<engine>(speed);
+            PinMap::write<PinLow, control>();
+        } else {
+            // нужно инвертировать значение, если крутим колесом назад
+            PWMGen<PWMTimer::T3P235>::fillFactor<engine>(1000 + speed);
+            PinMap::write<PinHigh, control>();
+        }
+    }
+
+    static void speedL(int16_t v)
+    {
+        return engineSpeed<Pin::D3, Pin::D51>(v);
+    }
+
+    static void speedR(int16_t v)
+    {
+        return engineSpeed<Pin::D2, Pin::D49>(v);
+    }
+
+    static int16_t rs;
 };
