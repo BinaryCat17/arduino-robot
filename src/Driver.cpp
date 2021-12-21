@@ -4,7 +4,7 @@
 #include "PWMGen.hpp"
 #include "App.hpp"
 
-void Driver::enable() {
+void Driver::enable(int16_t Kp_, int16_t Ki_, int16_t Kd_) {
     static bool enabled = false;
     if(!enabled)
     {
@@ -14,7 +14,9 @@ void Driver::enable() {
         return;
     }
 
-    //MUXController::freq(MUXFreq::F125000);
+    reg.start(Kp_, Ki_, Kd_, 0, rs - 10000, 10000 - rs);
+
+    MUXController::freq(MUXFreq::F125000);
     MUXController::enable();
     PWMGen<PWMTimer::T3P235>::enable(5000);
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "stdint.h"
 
-//#define ENABLE_SERIAL
+#define ENABLE_SERIAL
 #if defined(ENABLE_DEBUG)
 #include "Arduino.h"
 #include "avr8-stub.h"
@@ -9,6 +9,11 @@
 
 #if defined(ENABLE_SERIAL)
 #include <HardwareSerial.h>
+#endif
+
+#define ARDUINO_LIB
+#if defined(ARDUINO_LIB)
+#include "Arduino.h"
 #endif
 
 class App {
@@ -45,6 +50,11 @@ public:
 
     template<typename T>
     static void start() {
+
+#if defined(ARDUINO_LIB)
+        init();
+#endif
+
 #if defined(ENABLE_DEBUG)
         debug_init();
 #endif

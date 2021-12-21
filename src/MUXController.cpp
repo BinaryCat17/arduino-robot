@@ -2,22 +2,23 @@
 #include <avr/io.h>
 #include "App.hpp"
 
+#if not defined(ARDUINO_LIB)
 ISR(ADC_vect) {
     adc_data = ADCL | (ADCH << 8);
 }
+#endif
 
 void MUXController::enable() {
     static bool enabled = false;
-    if(!enabled)
-    {
+    if (!enabled) {
         enabled = true;
-    } else
-    {
+    } else {
         return;
     }
 
     App::println("MUXController enabled");
 
+#if not defined(ARDUINO_LIB)
     // запускаем АЦП
     ADCSRA = 1 << ADEN;
     // запускаем преобразование
@@ -28,9 +29,11 @@ void MUXController::enable() {
     ADCSRA |= 1 << ADIE;
     // опорное напряжение - напряжение питания AVCC
     ADMUX |= 1 << REFS0;
+#endif
 }
 
 void MUXController::freq(MUXFreq freq) {
+#if not defined(ARDUINO_LIB)
     switch (freq) {
         case MUXFreq::F8000000:
             return PinMap::setBits<true, ADPS0>(ADCSRA);
@@ -47,6 +50,7 @@ void MUXController::freq(MUXFreq freq) {
         case MUXFreq::F125000:
             return PinMap::setBits<true, ADPS0, ADPS1, ADPS2>(ADCSRA);
     }
+#endif
 }
 
 volatile uint16_t adc_data = 0;

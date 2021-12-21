@@ -7,10 +7,7 @@
 
 class Driver {
 public:
-    static void enable(int16_t Kp_, int16_t Ki_, int16_t Kd_)
-    {
-        reg.start(Kp_, Ki_, Kd_, 0, rs - 1000, 1000 - rs);
-    }
+    static void enable(int16_t Kp_, int16_t Ki_, int16_t Kd_);
 
     static void speed(int32_t speed)
     {
@@ -19,14 +16,15 @@ public:
 
     inline static void drive()
     {
-        auto s1 = (int16_t) MUXController::read<Pin::A0>();
+        auto const s1 = (int16_t) MUXController::read<Pin::A0>();
         auto s2 = (int16_t) MUXController::read<Pin::A1>();
+        if(s2 < 150)
+        {
+            s2 += 24;
+        }
 
-        int16_t cur = s1 - s2;
-
-        int16_t err = 0 - cur;
-        // int16_t out = robotKp * err;
-        int16_t out = err / 2;
+        int16_t const dif = s1 - s2;
+        int16_t const out = reg.calculate(dif);
 
         App::println("S ", s1, " ", s2, " F ", rs - out, " ", rs + out);
         speedL((rs - out));
@@ -42,7 +40,7 @@ private:
             PinMap::write<PinLow, control>();
         } else {
             // нужно инвертировать значение, если крутим колесом назад
-            PWMGen<PWMTimer::T3P235>::fillFactor<engine>(1000 + speed);
+            PWMGen<PWMTimer::T3P235>::fillFactor<engine>(10000 + speed);
             PinMap::write<PinHigh, control>();
         }
     }

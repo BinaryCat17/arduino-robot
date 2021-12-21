@@ -1,9 +1,12 @@
 #include "HardwareTimer.hpp"
 #include "avr/io.h"
 
+#if not defined(ARDUINO_LIB)
 ISR(TIMER2_COMPA_vect) {
     ++timer2_millis;
 }
+#endif
+
 
 volatile uint32_t timer2_millis = 0;
 
@@ -17,6 +20,7 @@ void HardwareTimer::enable() {
         return;
     }
 
+#if not defined(ARDUINO_LIB)
     unsigned long ctc_match_overflow = ((16000000 / 1000) / 128);
 
     // CTC counter mode
@@ -36,4 +40,5 @@ void HardwareTimer::enable() {
 
     TCNT1 = 0u;
     OCR2A = ctc_match_overflow;
+#endif
 }

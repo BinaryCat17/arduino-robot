@@ -2,6 +2,11 @@
 
 #include <avr/io.h>
 
+#define ARDUINO_LIB
+#if defined(ARDUINO_LIB)
+#include "Arduino.h"
+#endif
+
 const bool PinIn = false;
 const bool PinOut = true;
 
@@ -9,22 +14,25 @@ const bool PinLow = false;
 const bool PinHigh = true;
 
 enum class Pin {
-    A0,
-    A1,
-    A2,
-    A3,
-    D2,
-    D3,
-    D5,
-    D13,
-    D49,
-    D51,
+    A0 = PIN_A0,
+    A1 = PIN_A1,
+    A2 = PIN_A2,
+    A3 = PIN_A3,
+    D2 = 2,
+    D3 = 3,
+    D5 = 5,
+    D13 = 13,
+    D49 = 49,
+    D51 = 51,
 };
 
 class PinMap {
 public:
     template<bool d, Pin p>
     static void direction() {
+#if defined(ARDUINO_LIB)
+        pinMode(static_cast<int>(p), d);
+#else
         if constexpr(p == Pin::D2 || p == Pin::D3 || p == Pin::D5) {
             setBits<d, convertPin<p>()>(DDRE);
         } else if constexpr(p == Pin::D51 || p == Pin::D13) {
@@ -34,10 +42,14 @@ public:
         } else {
             static_assert("pin is not digital");
         }
+#endif
     }
 
     template<bool d, Pin p>
     static void write() {
+#if defined(ARDUINO_LIB)
+        digitalWrite(static_cast<int>(p), d);
+#else
         if constexpr(p == Pin::D2 || p == Pin::D3 || p == Pin::D5) {
             setBits<d, convertPin<p>()>(PORTE);
         } else if constexpr(p == Pin::D51 || p == Pin::D13) {
@@ -47,10 +59,14 @@ public:
         } else {
             static_assert("pin is not digital");
         }
+#endif
     }
 
     template<Pin p>
     static bool read() {
+#if defined(ARDUINO_LIB)
+        return digitalRead(static_cast<int>(p));
+#else
         if constexpr(p == Pin::D2 || p == Pin::D3 || p == Pin::D5) {
             return getBit<convertPin<p>()>(PINE);
         } else if constexpr(p == Pin::D51 || p == Pin::D13) {
@@ -60,8 +76,10 @@ public:
         } else {
             static_assert("pin is not digital");
         }
+#endif
     }
 
+#if not defined(ARDUINO_LIB)
     template<Pin p>
     constexpr static uint8_t convertPin() {
         switch (p) {
@@ -100,4 +118,5 @@ public:
             return false;
         }
     }
+#endif
 };

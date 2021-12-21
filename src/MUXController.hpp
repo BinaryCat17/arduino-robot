@@ -4,6 +4,11 @@
 #include <avr/io.h>
 #include "util/atomic.h"
 
+#define ARDUINO_LIB
+#if defined(ARDUINO_LIB)
+#include "Arduino.h"
+#endif
+
 enum class MUXFreq {
     F8000000,
     F4000000,
@@ -25,6 +30,9 @@ public:
     // производим тяжелые вычисления во время компиляции
     template<Pin p>
     static uint16_t read() {
+#if defined(ARDUINO_LIB)
+        return analogRead(static_cast<int>(p));
+#else
         if constexpr (p == Pin::A0) {
             PinMap::setBits<false, MUX0, MUX1, MUX2, MUX3, MUX4, MUX5>(ADMUX);
         } else if constexpr(p == Pin::A1) {
@@ -36,8 +44,7 @@ public:
         } else if constexpr(p == Pin::A3) {
             PinMap::setBits<false, MUX2, MUX3, MUX4, MUX5>(ADMUX);
             PinMap::setBits<true, MUX1, MUX0>(ADMUX);
-        } else
-        {
+        } else {
             static_assert("selected pin is not analog");
         }
 
@@ -49,6 +56,7 @@ public:
         }
 
         return data_return;
+#endif
     }
 };
 

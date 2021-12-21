@@ -24,6 +24,7 @@ public:
             return;
         }
 
+#if not defined(ARDUINO_LIB)
         cli();
         if constexpr(t == PWMTimer::T3P235)
         {
@@ -35,11 +36,11 @@ public:
             if (F_CPU / freq <= 65535) {
                 App::println("Prescaling 1");
                 TCCR3B |= 1 << CS30;
-                icr_val = F_CPU / freq <= 65535;
+                icr_val = F_CPU / freq;
             } else if (F_CPU / freq <= 65535 * 8) {
                 App::println("Prescaling 8");
                 TCCR3B |= 1 << CS31;
-                icr_val = F_CPU / freq / 8 <= 65535;
+                icr_val = F_CPU / freq / 8;
             } else {
                 assert("invalid frequency");
             }
@@ -47,13 +48,17 @@ public:
             ICR3 = icr_val;
         }
         sei();
+#endif
     }
 
     // factor 0 to 1000
     template<Pin p>
     static void fillFactor(uint16_t factor)
     {
-        auto const val = static_cast<uint16_t>(icr_val * factor / 1000);
+#if defined(ARDUINO_LIB)
+        analogWrite(static_cast<int>(p), factor / 39);
+#else
+        auto const val = static_cast<uint16_t>(icr_val * factor / 10000);
 
         if constexpr(p == Pin::D2 && t == PWMTimer::T3P235)
         {
@@ -68,6 +73,7 @@ public:
         {
             static_assert("invalid timer pin");
         }
+#endif
     }
 
 private:
