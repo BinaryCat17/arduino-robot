@@ -3,32 +3,38 @@
 #include "PinMap.hpp"
 #include "App.hpp"
 
-class RobotApp : public CustomApp {
+class RobotApp {
 public:
-    void init() override {
-        // настраиваем диод на выход
-        PinMap::direction(Pin::D13, PinDir::Out);
+    void init() {
+        HardwareTimer::enable();
 
-        // мигаем диодом раз в пол секунды - подаём признаки жизни
-        lightOn.start(1000, 0);
-        lightOff.start(1000, 500);
+        // настраиваем диод на выход
+        PinMap::direction<PinOut, Pin::D13>();
+
+        // мигаем диодом раз в пол секунды
+        lightOn.start(500, 0);
+        lightOff.start(500, 250);
+
+
 
         // базовая скорость двигателей
-        Driver::speed(0.25);
-        Driver::enable();
+        Driver::enable(15.f, 0.0, 0);
+        Driver::speed(1700);
+
+
     }
 
-    void loop() override {
+    void loop() {
         // подаём признаки жизни
         if (lightOn.event()) {
-            PinMap::write(Pin::D13, PinValue::High);
+            PinMap::write<PinHigh, Pin::D13>();
         }
 
         if (lightOff.event()) {
-            PinMap::write(Pin::D13, PinValue::Low);
+            PinMap::write<PinLow, Pin::D13>();
         }
 
-        Driver::correct();
+        Driver::drive();
     }
 
 private:
@@ -37,6 +43,5 @@ private:
 };
 
 int main() {
-    RobotApp app;
-    App::start(&app);
+    App::start<RobotApp>();
 }

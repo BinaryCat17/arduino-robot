@@ -1,18 +1,32 @@
 #pragma once
-#include <stdint.h>
 
-enum class PinDir
-{
-    In = 0,
-    Out = 1,
+#include <avr/io.h>
+
+//#define ARDUINO_LIB
+#if defined(ARDUINO_LIB)
+#include "Arduino.h"
+#endif
+
+const bool PinIn = false;
+const bool PinOut = true;
+
+const bool PinLow = false;
+const bool PinHigh = true;
+
+#if defined(ARDUINO_LIB)
+enum class Pin {
+    A0 = PIN_A0,
+    A1 = PIN_A1,
+    A2 = PIN_A2,
+    A3 = PIN_A3,
+    D2 = 2,
+    D3 = 3,
+    D5 = 5,
+    D13 = 13,
+    D49 = 49,
+    D51 = 51,
 };
-
-enum class PinValue
-{
-    Low = 0,
-    High = 1,
-};
-
+#else
 enum class Pin {
     A0,
     A1,
@@ -24,35 +38,100 @@ enum class Pin {
     D13,
     D49,
     D51,
-    Count,
 };
+#endif
 
 class PinMap {
 public:
-    static void direction(Pin p, PinDir val);
-
-    static void write(Pin p, PinValue val);
-
-    static PinValue read(Pin p);
-
-private:
-    static uint8_t convertPin(Pin pin);
-
-    inline static void setBit(volatile uint8_t &port, Pin pin, PinDir val) {
-        if (val == PinDir::Out) {
-            port |= (1 << convertPin(pin));
+    template<bool d, Pin p>
+    static void direction() {
+#if defined(ARDUINO_LIB)
+        pinMode(static_cast<int>(p), d);
+#else
+        if constexpr(p == Pin::D2 || p == Pin::D3 || p == Pin::D5) {
+            setBits<d, convertPin<p>()>(DDRE);
+        } else if constexpr(p == Pin::D51 || p == Pin::D13) {
+            setBits<d, convertPin<p>()>(DDRB);
+        } else if constexpr(p == Pin::D49) {
+            setBits<d, convertPin<p>()>(DDRL);
         } else {
-            port &= ~(1 << convertPin(pin));
+            static_assert("pin is not digital");
+        }
+#endif
+    }
+
+    template<bool d, Pin p>
+    static void write() {
+#if defined(ARDUINO_LIB)
+        digitalWrite(static_cast<int>(p), d);
+#else
+        if constexpr(p == Pin::D2 || p == Pin::D3 || p == Pin::D5) {
+            setBits<d, convertPin<p>()>(PORTE);
+        } else if constexpr(p == Pin::D51 || p == Pin::D13) {
+            setBits<d, convertPin<p>()>(PORTB);
+        } else if constexpr(p == Pin::D49) {
+            setBits<d, convertPin<p>()>(PORTL);
+        } else {
+            static_assert("pin is not digital");
+        }
+#endif
+    }
+
+    template<Pin p>
+    static bool read() {
+#if defined(ARDUINO_LIB)
+        return digitalRead(static_cast<int>(p));
+#else
+        if constexpr(p == Pin::D2 || p == Pin::D3 || p == Pin::D5) {
+            return getBit<convertPin<p>()>(PINE);
+        } else if constexpr(p == Pin::D51 || p == Pin::D13) {
+            return getBit<convertPin<p>()>(PINB);
+        } else if constexpr(p == Pin::D49) {
+            return getBit<convertPin<p>()>(PINL);
+        } else {
+            static_assert("pin is not digital");
+        }
+#endif
+    }
+
+#if not defined(ARDUINO_LIB)
+    template<Pin p>
+    constexpr static uint8_t convertPin() {
+        switch (p) {
+            case Pin::D2:
+                return PE4;
+            case Pin::D3:
+                return PE5;
+            case Pin::D5:
+                return PE3;
+            case Pin::D13:
+                return PB7;
+            case Pin::D49:
+                return PL0;
+            case Pin::D51:
+                return PB2;
+            default:
+                static_assert("it is not digital pin");
         }
     }
 
-    inline static PinValue getBit(volatile uint8_t &port, Pin pin) {
-        if(port & (1 << convertPin(pin)))
-        {
-            return PinValue::High;
-        } else
-        {
-            return PinValue::Low;
+    template<bool v, int... p>
+    static void setBits(volatile uint8_t &port) {
+        constexpr uint8_t mask = ((1 << p) | ...);
+        if constexpr(v) {
+            port |= mask;
+        } else {
+            port &= ~mask;
         }
     }
+
+    template<int p>
+    static bool getBit(volatile uint8_t &port) {
+        if (port & (1 << p)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+#endif
 };
