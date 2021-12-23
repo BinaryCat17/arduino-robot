@@ -18,54 +18,11 @@ public:
     {
         auto const s1 = (int16_t) MUXController::read<Pin::A0>();
         auto s2 = (int16_t) MUXController::read<Pin::A1>();
+        // балансируем датчики
         if(s2 < 150)
         {
             s2 -= 35;
         }
-
-        if(s1 > 200 && s2 < 200)
-        {
-            if(cnt >= 0)
-            {
-                ++cnt;
-            } else if(cnt < 0)
-            {
-                cnt = 0;
-            }
-        }
-
-        if(s2 > 200 && s1 < 200)
-        {
-            if(cnt <= 0)
-            {
-                --cnt;
-            } else if(cnt > 0)
-            {
-                cnt = 0;
-            }
-        }
-
-        App::println("Cnt: ", cnt);
-
-//        if(cnt > 27 || cnt < -27)
-//        {
-//            Timer timer;
-//            timer.start(250, 350);
-//
-//            while (!timer.event())
-//            {
-//                if(cnt > 0)
-//                {
-//                    speedL(-2000);
-//                    speedR(3000);
-//                } else
-//                {
-//                    speedL(3000);
-//                    speedR(-2000);
-//                }
-//            }
-//            cnt = 0;
-//        }
 
         int16_t const dif = s2 - s1;
         int16_t const out = reg.calculate(dif);
@@ -91,6 +48,7 @@ private:
 
     static void speedL(int16_t v)
     {
+        // балансируем двигатели на третьем роботе
         return engineSpeed<Pin::D3, Pin::D51>(v * 1.4f);
     }
 
@@ -100,6 +58,5 @@ private:
     }
 
     static int16_t rs;
-    static int16_t cnt;
     static PIDRegulator reg;
 };

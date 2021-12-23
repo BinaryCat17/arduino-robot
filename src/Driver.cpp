@@ -29,5 +29,4 @@ void Driver::enable(float Kp_, float Ki_, float Kd_) {
 }
 
 int16_t Driver::rs = 300;
-int16_t Driver::cnt = 0;
 PIDRegulator Driver::reg = {};
