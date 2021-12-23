@@ -1,7 +1,7 @@
 #pragma once
 #include "stdint.h"
 
-#define ENABLE_SERIAL
+//#define ENABLE_SERIAL
 #if defined(ENABLE_DEBUG)
 #include "Arduino.h"
 #include "avr8-stub.h"

@@ -31,7 +31,7 @@ int16_t PIDRegulator::calculate(int16_t current) {
 }
 
 void
-PIDRegulator::start(int16_t Kp_, int16_t Ki_, int16_t Kd_, int16_t r_, int16_t min_, int16_t max_) {
+PIDRegulator::start(float Kp_, float Ki_, float Kd_, int16_t r_, int16_t min_, int16_t max_) {
     HardwareTimer::enable();
     Kp = Kp_;
     Ki = Ki_;

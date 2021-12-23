@@ -4,7 +4,7 @@
 #include "PWMGen.hpp"
 #include "App.hpp"
 
-void Driver::enable(int16_t Kp_, int16_t Ki_, int16_t Kd_) {
+void Driver::enable(float Kp_, float Ki_, float Kd_) {
     static bool enabled = false;
     if(!enabled)
     {
@@ -14,7 +14,7 @@ void Driver::enable(int16_t Kp_, int16_t Ki_, int16_t Kd_) {
         return;
     }
 
-    reg.start(Kp_, Ki_, Kd_, 0, rs - 10000, 10000 - rs);
+    reg.start(Kp_, Ki_, Kd_, 0, rs - PWMRange, PWMRange - rs);
 
     MUXController::freq(MUXFreq::F125000);
     MUXController::enable();
@@ -29,4 +29,5 @@ void Driver::enable(int16_t Kp_, int16_t Ki_, int16_t Kd_) {
 }
 
 int16_t Driver::rs = 300;
+int16_t Driver::cnt = 0;
 PIDRegulator Driver::reg = {};

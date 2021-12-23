@@ -7,7 +7,7 @@
 
 class Driver {
 public:
-    static void enable(int16_t Kp_, int16_t Ki_, int16_t Kd_);
+    static void enable(float Kp_, float Ki_, float Kd_);
 
     static void speed(int32_t speed)
     {
@@ -20,8 +20,52 @@ public:
         auto s2 = (int16_t) MUXController::read<Pin::A1>();
         if(s2 < 150)
         {
-            s2 = 24;
+            s2 -= 35;
         }
+
+        if(s1 > 200 && s2 < 200)
+        {
+            if(cnt >= 0)
+            {
+                ++cnt;
+            } else if(cnt < 0)
+            {
+                cnt = 0;
+            }
+        }
+
+        if(s2 > 200 && s1 < 200)
+        {
+            if(cnt <= 0)
+            {
+                --cnt;
+            } else if(cnt > 0)
+            {
+                cnt = 0;
+            }
+        }
+
+        App::println("Cnt: ", cnt);
+
+//        if(cnt > 27 || cnt < -27)
+//        {
+//            Timer timer;
+//            timer.start(250, 350);
+//
+//            while (!timer.event())
+//            {
+//                if(cnt > 0)
+//                {
+//                    speedL(-2000);
+//                    speedR(3000);
+//                } else
+//                {
+//                    speedL(3000);
+//                    speedR(-2000);
+//                }
+//            }
+//            cnt = 0;
+//        }
 
         int16_t const dif = s2 - s1;
         int16_t const out = reg.calculate(dif);
@@ -40,14 +84,14 @@ private:
             PinMap::write<PinLow, control>();
         } else {
             // нужно инвертировать значение, если крутим колесом назад
-            PWMGen<PWMTimer::T3P235>::fillFactor<engine>(10000 + speed);
+            PWMGen<PWMTimer::T3P235>::fillFactor<engine>(PWMRange + speed);
             PinMap::write<PinHigh, control>();
         }
     }
 
     static void speedL(int16_t v)
     {
-        return engineSpeed<Pin::D3, Pin::D51>(v);
+        return engineSpeed<Pin::D3, Pin::D51>(v * 1.4f);
     }
 
     static void speedR(int16_t v)
@@ -56,5 +100,6 @@ private:
     }
 
     static int16_t rs;
+    static int16_t cnt;
     static PIDRegulator reg;
 };

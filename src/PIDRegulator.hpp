@@ -4,15 +4,15 @@
 
 class PIDRegulator {
 public:
-    void start(int16_t Kp_, int16_t Ki_, int16_t Kd_, int16_t r_, int16_t min_, int16_t max_);
+    void start(float Kp_, float Ki_, float Kd_, int16_t r_, int16_t min_, int16_t max_);
 
     int16_t calculate(int16_t current);
 
 private:
     //  коэффициенты усиления пропорциональной, интегрирующей и дифференцирующей составляющих регулятора соответственно
-    int16_t Kp;
-    int16_t Ki;
-    int16_t Kd;
+    float Kp;
+    float Ki;
+    float Kd;
     // целевой результат
     int16_t r;
 

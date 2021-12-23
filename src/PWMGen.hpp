@@ -9,6 +9,8 @@
 #include "Arduino.h"
 #endif
 
+const int32_t PWMRange = 10000;
+
 enum class PWMTimer {
     T3P235,
 };
@@ -55,14 +57,13 @@ public:
 #endif
     }
 
-    // factor 0 to 1000
     template<Pin p>
     static void fillFactor(uint16_t factor)
     {
 #if defined(ARDUINO_LIB)
         analogWrite(static_cast<int>(p), factor / 39);
 #else
-        auto const val = static_cast<uint16_t>(icr_val * factor / 10000);
+        auto const val = static_cast<uint16_t>(icr_val * factor / PWMRange);
 
         if constexpr(p == Pin::D2 && t == PWMTimer::T3P235)
         {

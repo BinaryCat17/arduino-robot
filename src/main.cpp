@@ -15,9 +15,13 @@ public:
         lightOn.start(500, 0);
         lightOff.start(500, 250);
 
+
+
         // базовая скорость двигателей
-        Driver::enable(5, 0, 0);
-        Driver::speed(3000);
+        Driver::enable(15.f, 0.0, 0);
+        Driver::speed(1700);
+
+
     }
 
     void loop() {
