@@ -2,7 +2,7 @@
 
 #include <avr/io.h>
 
-#define ARDUINO_LIB
+//#define ARDUINO_LIB
 #if defined(ARDUINO_LIB)
 #include "Arduino.h"
 #endif
@@ -13,6 +13,7 @@ const bool PinOut = true;
 const bool PinLow = false;
 const bool PinHigh = true;
 
+#if defined(ARDUINO_LIB)
 enum class Pin {
     A0 = PIN_A0,
     A1 = PIN_A1,
@@ -25,6 +26,20 @@ enum class Pin {
     D49 = 49,
     D51 = 51,
 };
+#else
+enum class Pin {
+    A0,
+    A1,
+    A2,
+    A3,
+    D2,
+    D3,
+    D5,
+    D13,
+    D49,
+    D51,
+};
+#endif
 
 class PinMap {
 public:

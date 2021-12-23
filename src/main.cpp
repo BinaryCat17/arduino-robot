@@ -16,7 +16,7 @@ public:
         lightOff.start(500, 250);
 
         // базовая скорость двигателей
-        Driver::enable(20, 0, 0);
+        Driver::enable(5, 0, 0);
         Driver::speed(3000);
     }
 

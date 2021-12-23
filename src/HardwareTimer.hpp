@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "util/atomic.h"
 
-#define ARDUINO_LIB
+//#define ARDUINO_LIB
 #if defined(ARDUINO_LIB)
 #include "Arduino.h"
 #endif

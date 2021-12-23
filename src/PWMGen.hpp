@@ -4,6 +4,10 @@
 #include "App.hpp"
 #include "avr/interrupt.h"
 #include "assert.h"
+//#define ARDUINO_LIB
+#if defined(ARDUINO_LIB)
+#include "Arduino.h"
+#endif
 
 enum class PWMTimer {
     T3P235,

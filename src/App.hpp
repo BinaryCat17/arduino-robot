@@ -11,7 +11,7 @@
 #include <HardwareSerial.h>
 #endif
 
-#define ARDUINO_LIB
+//#define ARDUINO_LIB
 #if defined(ARDUINO_LIB)
 #include "Arduino.h"
 #endif

@@ -20,10 +20,10 @@ public:
         auto s2 = (int16_t) MUXController::read<Pin::A1>();
         if(s2 < 150)
         {
-            s2 += 24;
+            s2 = 24;
         }
 
-        int16_t const dif = s1 - s2;
+        int16_t const dif = s2 - s1;
         int16_t const out = reg.calculate(dif);
 
         App::println("S ", s1, " ", s2, " F ", rs - out, " ", rs + out);
