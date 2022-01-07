@@ -1,10 +1,6 @@
 #include "PIDRegulator.hpp"
 
-int16_t PIDRegulator::calculate(int16_t current) {
-    auto const time = HardwareTimer::millis();
-    auto const dt = (int16_t) (prevTime - time);
-    prevTime = time;
-
+int16_t PIDRegulator::calculate(int16_t current, uint32_t dt) {
     // ошибка
     int16_t const error = r - current;
 
@@ -32,7 +28,6 @@ int16_t PIDRegulator::calculate(int16_t current) {
 
 void
 PIDRegulator::start(float Kp_, float Ki_, float Kd_, int16_t r_, int16_t min_, int16_t max_) {
-    HardwareTimer::enable();
     Kp = Kp_;
     Ki = Ki_;
     Kd = Kd_;
@@ -41,5 +36,4 @@ PIDRegulator::start(float Kp_, float Ki_, float Kd_, int16_t r_, int16_t min_, i
     max = max_;
     integral = 0;
     prevErr = 0;
-    prevTime = HardwareTimer::millis();
 }
