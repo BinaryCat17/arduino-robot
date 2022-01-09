@@ -36,16 +36,17 @@ namespace AvrLib {
             constexpr DPin pin = static_cast<DPin>(ipin);
             pinDirection<PinIn, pin>();
             // подтяжка к питанию
-            pinWrite<true, pin>();
+            //pinWrite<true, pin>();
 
             auto constexpr inter = interNum<pin>();
+            monitor.println("Enable inter ", inter);
             if constexpr(inter < 4) {
-                setMode<mode>(EICRA, ISC00 + interNum<pin>() * 2);
+                setMode<mode, ISC00 + interNum<pin>() * 2>(EICRA);
             } else if (inter < 8) {
-                setMode<mode>(EICRB, ISC40 + interNum<pin>() * 2);
+                setMode<mode, ISC40 + interNum<pin>() * 2 - 4>(EICRB);
             }
 
-            setBits<true, INT0 + interNum<pin>()>(EIMSK);
+            setBits<true, INT0 + inter>(EIMSK);
         }
 
         template<ISRPin ipin>
@@ -56,7 +57,7 @@ namespace AvrLib {
 
     private:
         template<DPin pin>
-        constexpr uint8_t interNum() {
+        static constexpr uint8_t interNum() {
             if constexpr(pin == DPin::D18) {
                 return 3;
             } else if constexpr(pin == DPin::D19) {

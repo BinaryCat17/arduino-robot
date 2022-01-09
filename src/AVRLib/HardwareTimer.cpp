@@ -1,6 +1,5 @@
 #include "HardwareTimer.hpp"
-
-class Main;
+#include "Main.hpp"
 
 #define MAKE_HARDWARE_TIMER_IMPL_16_BIT(NUM, AN, BN, CN) \
 ISR(TIMER##NUM##_COMPA_vect) {\
@@ -34,7 +33,7 @@ void AvrLib::HardwareTimerPWM##NUM::enable() {\
             if(timerCounter##NUM.isInited())\
             {\
                 monitor.println("Timer " #NUM " already initialized as Counter");\
-            } else if(!inited) {\
+            } else if(!inited) {                         \
                 BitVal(TCCR##NUM##A).off<WGM##NUM##0>().on<WGM##NUM##1>();\
                 BitVal(TCCR##NUM##B).on<WGM##NUM##2, WGM##NUM##3>();\
                 inited = true;                      \

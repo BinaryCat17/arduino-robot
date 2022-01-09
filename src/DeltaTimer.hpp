@@ -4,38 +4,50 @@
 
 class Main;
 
+extern volatile uint16_t _impl_dt;
+
 class DeltaTimer {
 public:
     void enable() {
         AvrLib::enableOnce([] {
-            AvrLib::timerCounter1.freq11Max<1000>();
-            AvrLib::timerCounter1.interrupt11<true>();
-            AvrLib::timerCounter1.enable();
+            AvrLib::timerCounter4.freq6Max<1000000>();
+            AvrLib::timerCounter4.interrupt6<true>();
+            AvrLib::timerCounter4.enable();
         });
     }
 
-    uint8_t deltaMillis() {
+    uint16_t deltaMicros() {
         return lastDt;
     }
 
-    void loopPassed() {
+    uint16_t currentMicros()
+    {
+        uint16_t returnCnt;
         ATOMIC_BLOCK(ATOMIC_FORCEON) {
-            lastDt = dt;
+            returnCnt = _impl_dt;
         }
-        dt = 0;
+        return returnCnt;
     }
 
-    volatile uint8_t dt;
-    uint8_t lastDt;
+    void pass() {
+        ATOMIC_BLOCK(ATOMIC_FORCEON) {
+            lastDt = _impl_dt;
+        }
+        _impl_dt = 0;
+    }
+
+private:
+    uint16_t lastDt;
 };
+
 
 extern DeltaTimer deltaTimer;
 
 namespace AvrLib {
     template<>
-    struct TimerCounter1Interrupts<Main> : TimerCounter3Interrupts<void> {
-        static void match11() {
-            deltaTimer.dt += 1;
+    struct TimerCounter4Interrupts<Main> : TimerCounter4Interrupts<void> {
+        static void match6() {
+            _impl_dt += 1;
         }
     };
 }

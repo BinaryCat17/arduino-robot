@@ -14,6 +14,8 @@ namespace AvrLib {
         D2,
         D3,
         D5,
+        D11,
+        D12,
         D13,
         D18,
         D19,
@@ -32,6 +34,10 @@ namespace AvrLib {
                 return PE5;
             case DPin::D5:
                 return PE3;
+            case DPin::D11:
+                return PB5;
+            case DPin::D12:
+                return PB6;
             case DPin::D13:
                 return PB7;
             case DPin::D18:
@@ -55,7 +61,7 @@ namespace AvrLib {
     void pinDirection() {
         if constexpr(p == DPin::D2 || p == DPin::D3 || p == DPin::D5) {
             setBits<d, convertPin<p>()>(DDRE);
-        } else if constexpr(p == DPin::D51 || p == DPin::D13) {
+        } else if constexpr(p == DPin::D51 || p == DPin::D13 || p == DPin::D12 || p == DPin::D11) {
             setBits<d, convertPin<p>()>(DDRB);
         } else if constexpr(p == DPin::D18 || p == DPin::D19 || p == DPin::D20 || p == DPin::D21) {
             setBits<d, convertPin<p>()>(DDRD);
@@ -70,7 +76,7 @@ namespace AvrLib {
     void pinWrite() {
         if constexpr(p == DPin::D2 || p == DPin::D3 || p == DPin::D5) {
             setBits<d, convertPin<p>()>(PORTE);
-        } else if constexpr(p == DPin::D51 || p == DPin::D13) {
+        } else if constexpr(p == DPin::D51 || p == DPin::D13 || p == DPin::D12 || p == DPin::D11) {
             setBits<d, convertPin<p>()>(PORTB);
         } else if constexpr(p == DPin::D18 || p == DPin::D19 || p == DPin::D20 || p == DPin::D21) {
             setBits<d, convertPin<p>()>(PORTD);
@@ -85,7 +91,7 @@ namespace AvrLib {
     bool pinRead() {
         if constexpr(p == DPin::D2 || p == DPin::D3 || p == DPin::D5) {
             return getBit<convertPin<p>()>(PINE);
-        } else if constexpr(p == DPin::D51 || p == DPin::D13) {
+        } else if constexpr(p == DPin::D51 || p == DPin::D13 || p == DPin::D12 || p == DPin::D11) {
             return getBit<convertPin<p>()>(PINB);
         } else if constexpr(p == DPin::D18 || p == DPin::D19 || p == DPin::D20 || p == DPin::D21) {
             return getBit<convertPin<p>()>(PIND);

@@ -12,20 +12,21 @@ public:
     void enable(float Kp_, float Ki_, float Kd_);
 
     void speed(int16_t speed) {
+        monitor.println("Robot speed: ", speed);
         rs = speed;
     }
 
     void drive() {
         auto const s1 = (int16_t) adc.read<APin::A0>();
-        auto s2 = (int16_t) adc.read<APin::A1>();
+        auto const s2 = (int16_t) adc.read<APin::A1>();
 
         // балансируем датчики
-        if (s2 < 150) {
-            s2 -= 35;
-        }
+//        if (s2 < 150) {
+//            s2 -= 35;
+//        }
 
         int16_t const dif = s2 - s1;
-        int16_t const out = reg.calculate(dif, deltaTimer.deltaMillis());
+        int16_t const out = reg.calculate(dif, deltaTimer.deltaMicros());
 
         monitor.println("S ", s1, " ", s2, " F ", rs - out, " ", rs + out);
         speedL(rs - out);

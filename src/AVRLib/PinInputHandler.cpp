@@ -1,5 +1,6 @@
 #include "PinInputHandler.hpp"
 #include "avr/interrupt.h"
+#include "Main.hpp"
 
 class Main;
 

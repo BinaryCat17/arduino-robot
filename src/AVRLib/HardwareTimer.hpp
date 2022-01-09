@@ -124,6 +124,7 @@ protected:\
                 monitor.println("Timer " #NUM " Maximum period is 243 seconds");\
             }\
             reg = top / prescaling;\
+            monitor.println("Timer " #NUM " top: ", reg);\
             sei();\
             return prescaling;\
         }\
@@ -148,7 +149,7 @@ protected:\
             modeB<static_cast<CompareMatch>(mode)>();\
         }\
         /* 0 to 100*/\
-        void fillFactor##BN(float factor) {\
+        void fillFactor##BN(float factor) {         \
             OCR##NUM##B = static_cast<uint16_t>(ICR##NUM * factor / 100.f);\
         }\
 \

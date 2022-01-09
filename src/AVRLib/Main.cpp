@@ -1,5 +1,6 @@
 #include "App.hpp"
 #include "SerialMonitor.hpp"
+#include "avr/interrupt.h"
 
 namespace AvrLib {
     Main _implUserApp = {};
@@ -17,6 +18,7 @@ int main() {
     AvrLib::monitor.println("Starting...");
 
     AvrLib::_implUserApp.setup();
+    sei();
 
     while (true) {
         AvrLib::_implUserApp.loop();
