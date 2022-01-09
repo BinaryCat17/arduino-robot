@@ -184,6 +184,15 @@ protected:\
     public:\
         void enable();\
 \
+        uint16_t counter() const\
+        {\
+            unsigned char sreg = SREG;\
+            cli();\
+            unsigned int i = TCNT##NUM;\
+            SREG = sreg;\
+            return i;\
+        }\
+\
         template<uint32_t fr>\
         void freq##AN##Max() {\
             prescaling = HardwareTimer16Bit##NUM##Base::freq<fr>(OCR##NUM##A);\

@@ -2,6 +2,7 @@
 
 #include <avr/io.h>
 #include "Util/Utils.hpp"
+#include "util/atomic.h"
 
 namespace AvrLib {
     const bool PinIn = false;
@@ -101,6 +102,4 @@ namespace AvrLib {
             static_assert("pin is not digital");
         }
     }
-
-
 }

@@ -1,16 +1,17 @@
 #pragma once
 
 #include "AVRLib/PinInputHandler.hpp"
+#include "math.h"
+#include "DeltaTimer.hpp"
 
 using namespace AvrLib;
 
 class Main;
 
-extern volatile uint8_t encMask1;
-extern volatile uint8_t encMask2;
-extern volatile int32_t encCntL;
-extern volatile int32_t encCntR;
-
+extern volatile uint8_t implEncMask1;
+extern volatile uint8_t implEncMask2;
+extern volatile int32_t implEncCntL;
+extern volatile int32_t implEncCntR;
 
 // в миллиметрах
 struct Position {
@@ -18,20 +19,60 @@ struct Position {
     int32_t y;
 };
 
-
 const int32_t wheelLen = 213;
+const double wheelbase = 200;
+const double wheelRadius = wheelbase / 2;
 const int32_t avgEnc = 2437;
 
 class PositionTrack {
 public:
     void enable();
 
-    Position pos() {
+    void track() {
+        int32_t encCntL, encCntR;
+
+        ATOMIC_BLOCK(ATOMIC_FORCEON) {
+            encCntL = implEncCntL;
+            encCntR = implEncCntR;
+        }
+
+        // для правого колеса
+        int32_t const moveR = (encCntR - prevEncCntR) * wheelLen / avgEnc;
+        double const rotationR = (double) moveR / wheelbase;
+        posX -= wheelRadius * sin(rotationR);
+        double const cosR = cos(rotationR);
+        posY += wheelRadius * (1 / cosR - 1) * cosR;
+        mRotationRadians += rotationR * 2;
+
+        // для левого колеса
+        int32_t const moveL = (encCntL - prevEncCntL) * wheelLen / avgEnc;
+        double const rotationL = (double) moveL / wheelbase;
+        posX += wheelRadius * sin(rotationL);
+        double const cosL = cos(rotationL);
+        posY += wheelRadius * (1 / cosL - 1) * cosL;
+        mRotationRadians -= rotationL * 2;
+
+        prevEncCntL = encCntL;
+        prevEncCntR = encCntR;
+    }
+
+    float rotationRadians() const {
+        return (float) mRotationRadians;
+    }
+
+    Position pos() const {
         return Position{
-                encCntL * wheelLen / avgEnc,
-                encCntR * wheelLen / avgEnc
+                (int32_t) posX,
+                (int32_t) posY,
         };
     }
+
+private:
+    double mRotationRadians = 0;
+    double posX = 0;
+    double posY = 0;
+    int32_t prevEncCntL = 0;
+    int32_t prevEncCntR = 0;
 };
 
 extern PositionTrack location;
@@ -64,20 +105,19 @@ namespace AvrLib {
     template<>
     struct PinHandlerInterrupts<Main> {
         static void handle18() {
-            encoderChange<DPin::D18, DPin::D19>(encCntR, encMask1);
+            encoderChange<DPin::D18, DPin::D19>(implEncCntR, implEncMask1);
         }
 
         static void handle19() {
-            encoderChange<DPin::D18, DPin::D19>(encCntR, encMask1);
+            encoderChange<DPin::D18, DPin::D19>(implEncCntR, implEncMask1);
         }
 
         static void handle20() {
-            encoderChange<DPin::D20, DPin::D21>(encCntL, encMask2);
+            encoderChange<DPin::D20, DPin::D21>(implEncCntL, implEncMask2);
         }
 
         static void handle21() {
-            encoderChange<DPin::D20, DPin::D21>(encCntL, encMask2);
+            encoderChange<DPin::D20, DPin::D21>(implEncCntL, implEncMask2);
         }
-
     };
 }

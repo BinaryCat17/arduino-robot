@@ -32,8 +32,8 @@ public:
     void pass() {
         ATOMIC_BLOCK(ATOMIC_FORCEON) {
             lastDt = _impl_dt;
+            _impl_dt = 0;
         }
-        _impl_dt = 0;
     }
 
 private:
