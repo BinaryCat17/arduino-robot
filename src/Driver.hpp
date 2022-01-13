@@ -44,18 +44,7 @@ public:
         mSumR = 0;
     }
 
-    void move(float len)
-    {
-        mSumL = len;
-        mSumR = len;
-        speedL(0);
-        speedR(0);
-        while(!near(mSumL, 1.f, mFactSumL) && !near(mSumL, 1.f, mFactSumL))
-        {
-            correct();
-        }
-        stop();
-    }
+    void move(float len);
 
 private:
     PIDRegulator mPidL = {};

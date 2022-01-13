@@ -23,20 +23,27 @@ void PositionTrack::track() {
         encCntR = implEncCntR;
     }
 
+    // считываем координаты робота x, y и расстояние которое проехало каждое колесо
     mRightMovement = (float) (encCntR - mPrevEncCntR) * wheelLen / avgEnc;
     mLeftMovement = (float) (encCntL - mPrevEncCntL) * wheelLen / avgEnc;
 
     double const dif = mRightMovement - mLeftMovement;
 
+    // угол поворота робота с момента предыдущего измерения
     double const angle = dif / wheelbase;
     double const sinA = sin(angle);
     double const cosA = cos(angle);
+
+    // синус и косинус угла робота, которы был до нового поворота
     double const sinR = sin(mRotationRadians);
     double const cosR = cos(mRotationRadians);
 
     double const mx = (-baseRadius * sinA);
     double const my = baseRadius * (1.0 / cosA - 1.0) * cosA;
 
+    // поворот совершается в сторону колеса с меньшей скоростью.
+    // меньшая скорость исопльзуется для движения по вектору направления робота,
+    // разность скоростей определяет угол поворота
     if(fabs(mRightMovement) > fabs(mLeftMovement))
     {
         mPosY -= (cosR * mx - sinR * my) + mLeftMovement * cosR;

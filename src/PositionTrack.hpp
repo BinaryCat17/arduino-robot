@@ -26,17 +26,6 @@ const double baseRadius = wheelbase / 2;
 //const float avgEnc = 2437;
 const float avgEnc = 1600; // Робот 1, 3
 
-template<typename T>
-T sign(T v) {
-    if (v > 0) {
-        return 1;
-    } else if (v < 0) {
-        return -1;
-    } else {
-        return 0;
-    }
-}
-
 class PositionTrack {
 public:
     void enable();

@@ -50,17 +50,37 @@ void Driver::correct() {
 
 void Driver::rotate(float degrees) {
     degrees *= 1.08;
+
+    // пока угол поворота робота не достигнет нужного с допуском в 1 градус
+    // продолжаем корректировать путь с помощью регулятора
     mPidAngle.target(degrees);
     while (!near(degrees, 1.f, location.rotationDegrees()))
     {
         driver.correct();
         auto const a = mPidAngle.calculate(location.rotationDegrees(), mDt);
         monitor.println(location.rotationDegrees(), " ", mDt, " ", a);
+        // чтобы крутиться вокруг своей оси, даём одинаковые скорости в противоположные стороны
         driver.speedL(-a);
         driver.speedR(a);
     }
     monitor.println("Hello");
     driver.stop();
+}
+
+void Driver::move(float len) {
+    mSumL = len;
+    mSumR = len;
+    // ставим базовую скорость 0, чтобы регулятор сам решил, как нужно ехать
+    speedL(0);
+    speedR(0);
+
+    // пока фактическая скорость робота не достигнет нужного расстояния
+    // с погрешностью 1 миллиметр, продолжаем корректировать путь с помощью регулятора
+    while(!near(mSumL, 1.f, mFactSumL) && !near(mSumL, 1.f, mFactSumL))
+    {
+        correct();
+    }
+    stop();
 }
 
 Driver driver = {};
