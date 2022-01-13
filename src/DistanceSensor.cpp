@@ -8,7 +8,7 @@ const DPin trig = DPin::D12;
 const DPin echo = DPin::D11;
 
 void DistanceSensor::enable() {
-    deltaTimer.enable();
+    deltaTimer4.enable(Precision::Micros);
     pinDirection<PinOut, trig>();
     pinDirection<PinIn, echo>();
 }
@@ -18,17 +18,16 @@ uint16_t DistanceSensor::distanceMm() {
     _delay_us(2);
     pinWrite<PinHigh, trig>();
     _delay_us(10);
+
     pinWrite<PinLow, trig>();
 
-    // начинаем отсчет времени
-    deltaTimer.pass();
-    // зачем мучаться и пытаться ждать на прерывании изменения состояния ножки, когда при
-    // расстоянии в 30см придётся ждать 1740 микросекунд, что не существенно, если робот обычно
-    // выполняет не более 30 проверок в секунду
+    while(!pinRead<echo>()) {}
+    deltaTimer4.pass();
     while(pinRead<echo>()) {}
-    uint16_t const time = deltaTimer.currentMicros();
+    uint16_t const time = deltaTimer4.current();
     // переводим в миллиметры при скорости звука в 340 м/с, расстояние удваиваем
-    return time / 5.8f;
+    // пол сантиметра добавляем, чтобы считать от начала решетки
+    return time / 5.8f + 5;
 }
 
 DistanceSensor distanceSensor = {};

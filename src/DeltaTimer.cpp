@@ -1,6 +1,6 @@
 #include "DeltaTimer.hpp"
 
-
-volatile uint16_t _impl_dt = 0;
-
-DeltaTimer deltaTimer = {};
+DeltaTimer1 deltaTimer1 = {};
+DeltaTimer3 deltaTimer3 = {};
+DeltaTimer4 deltaTimer4 = {};
+DeltaTimer5 deltaTimer5 = {};

@@ -9,9 +9,45 @@ volatile uint8_t implEncMask2 = 0;
 PositionTrack location = {};
 
 void PositionTrack::enable() {
-    deltaTimer.enable();
     pinInputHandler.enable<ISRPin::D18, PinHandleMode::Change>();
     pinInputHandler.enable<ISRPin::D19, PinHandleMode::Change>();
     pinInputHandler.enable<ISRPin::D20, PinHandleMode::Change>();
     pinInputHandler.enable<ISRPin::D21, PinHandleMode::Change>();
+}
+
+void PositionTrack::track() {
+    int32_t encCntL, encCntR;
+
+    ATOMIC_BLOCK(ATOMIC_FORCEON) {
+        encCntL = implEncCntL;
+        encCntR = implEncCntR;
+    }
+
+    mRightMovement = (float) (encCntR - mPrevEncCntR) * wheelLen / avgEnc;
+    mLeftMovement = (float) (encCntL - mPrevEncCntL) * wheelLen / avgEnc;
+
+    double const dif = mRightMovement - mLeftMovement;
+
+    double const angle = dif / wheelbase;
+    double const sinA = sin(angle);
+    double const cosA = cos(angle);
+    double const sinR = sin(mRotationRadians);
+    double const cosR = cos(mRotationRadians);
+
+    double const mx = (-baseRadius * sinA);
+    double const my = baseRadius * (1.0 / cosA - 1.0) * cosA;
+
+    if(fabs(mRightMovement) > fabs(mLeftMovement))
+    {
+        mPosY -= (cosR * mx - sinR * my) + mLeftMovement * cosR;
+        mPosX += (sinR * mx - cosR * my) + mLeftMovement * sinR;
+    } else
+    {
+        mPosY += (cosR * mx - sinR * my) + mRightMovement * cosR;
+        mPosX -= (sinR * mx - cosR * my) + mRightMovement * sinR;
+    }
+
+    mRotationRadians += angle;
+    mPrevEncCntL = encCntL;
+    mPrevEncCntR = encCntR;
 }

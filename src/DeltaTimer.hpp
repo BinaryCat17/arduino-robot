@@ -1,53 +1,65 @@
 #pragma once
+
 #include "AVRLib/HardwareTimer.hpp"
 #include "util/atomic.h"
 
+using namespace AvrLib;
+
 class Main;
 
-extern volatile uint16_t _impl_dt;
-
-class DeltaTimer {
-public:
-    void enable() {
-        AvrLib::enableOnce([] {
-            AvrLib::timerCounter4.freq6Max<1000000>();
-            AvrLib::timerCounter4.interrupt6<true>();
-            AvrLib::timerCounter4.enable();
-        });
-    }
-
-    uint16_t deltaMicros() {
-        return lastDt;
-    }
-
-    uint16_t currentMicros()
-    {
-        uint16_t returnCnt;
-        ATOMIC_BLOCK(ATOMIC_FORCEON) {
-            returnCnt = _impl_dt;
-        }
-        return returnCnt;
-    }
-
-    void pass() {
-        ATOMIC_BLOCK(ATOMIC_FORCEON) {
-            lastDt = _impl_dt;
-            _impl_dt = 0;
-        }
-    }
-
-private:
-    uint16_t lastDt;
+enum class Precision {
+    Millis,
+    Micros,
 };
 
+#define MAKE_DELTA_TIMER(NUM) \
+class DeltaTimer##NUM {\
+public:\
+    void enable(Precision pr) {\
+        AvrLib::enableOnce([this, pr] {               \
+            if (pr == Precision::Micros) \
+            {\
+                AvrLib::timerNormal##NUM.freq<PreScaling::P8>();\
+            } else if (pr == Precision::Millis)    \
+            {\
+                AvrLib::timerNormal##NUM.freq<PreScaling::P1024>();\
+            }\
+            AvrLib::timerNormal##NUM.interrupt<true>();\
+            AvrLib::timerNormal##NUM.enable();\
+            mPr = pr;                \
+        });\
+    }\
+\
+    uint16_t delta() {\
+        return mLastDt;\
+    }\
+\
+    uint16_t current()\
+    {                   \
+        auto cnt = timerNormal##NUM.cnt();\
+        if (mPr == Precision::Micros) \
+        {               \
+            return cnt / 2;\
+        } else\
+        {\
+            return cnt * 64 / 1000; \
+        } \
+    }\
+\
+    uint16_t pass() {\
+        mLastDt = current();\
+        timerNormal##NUM.release();                   \
+        return mLastDt;\
+    }\
+\
+private:\
+    uint16_t mLastDt;\
+    Precision mPr;\
+};\
+extern DeltaTimer##NUM deltaTimer##NUM;
 
-extern DeltaTimer deltaTimer;
+MAKE_DELTA_TIMER(1)
+MAKE_DELTA_TIMER(3)
+MAKE_DELTA_TIMER(4)
+MAKE_DELTA_TIMER(5)
 
-namespace AvrLib {
-    template<>
-    struct TimerCounter4Interrupts<Main> : TimerCounter4Interrupts<void> {
-        static void match6() {
-            _impl_dt += 1;
-        }
-    };
-}

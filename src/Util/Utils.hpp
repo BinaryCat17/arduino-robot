@@ -1,4 +1,5 @@
 #pragma once
+#include "math.h"
 
 using Custom = void;
 
@@ -62,4 +63,10 @@ namespace AvrLib {
 
         volatile uint8_t &mPort;
     };
+
+    template<typename T>
+    bool near(T target, T distance, T v)
+    {
+        return ::fabs(v - target) < distance;
+    }
 }

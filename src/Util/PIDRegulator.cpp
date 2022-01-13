@@ -1,21 +1,22 @@
 #include "PIDRegulator.hpp"
+#include "AVRLib/SerialMonitor.hpp"
 
-int16_t PIDRegulator::calculate(int16_t current, uint32_t dt) {
+float PIDRegulator::calculate(float current, float dt) {
     // ошибка
-    int16_t const error = r - current;
+    float const error = r - current;
 
     // пропорциональная составляющая
-    int16_t const Pout = error * Kp;
+    float const Pout = error * Kp;
 
     // интегрирующая составляющая
     integral += error * dt;
-    int16_t const Iout = integral * Ki;
+    float const Iout = integral * Ki;
 
     // производная составляющая
-    int16_t const deriviate = (error - prevErr) / dt;
-    int16_t const Dout = Kd * deriviate;
+    float const deriviate = (error - prevErr) / dt;
+    float const Dout = Kd * deriviate;
 
-    int16_t output = Pout + Iout + Dout;
+    float output = Pout + Iout + Dout;
     prevErr = error;
 
     if (output > max)
@@ -27,7 +28,7 @@ int16_t PIDRegulator::calculate(int16_t current, uint32_t dt) {
 }
 
 void
-PIDRegulator::start(float Kp_, float Ki_, float Kd_, int16_t r_, int16_t min_, int16_t max_) {
+PIDRegulator::start(float Kp_, float Ki_, float Kd_, float r_, float min_, float max_) {
     Kp = Kp_;
     Ki = Ki_;
     Kd = Kd_;

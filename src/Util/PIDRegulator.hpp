@@ -3,9 +3,14 @@
 
 class PIDRegulator {
 public:
-    void start(float Kp_, float Ki_, float Kd_, int16_t r_, int16_t min_, int16_t max_);
+    void start(float Kp_, float Ki_, float Kd_, float r_, float min_, float max_);
 
-    int16_t calculate(int16_t current, uint32_t dt);
+    void target(float r_)
+    {
+        r = r_;
+    }
+
+    float calculate(float current, float dt);
 
 private:
     //  коэффициенты усиления пропорциональной, интегрирующей и дифференцирующей составляющих регулятора соответственно
@@ -13,13 +18,13 @@ private:
     float Ki;
     float Kd;
     // целевой результат
-    int16_t r;
+    float r;
 
     // границы скорости двигателя
-    int16_t min;
-    int16_t max;
+    float min;
+    float max;
 
-    int16_t integral;
-    int16_t prevErr;
+    float integral;
+    float prevErr;
 };
 

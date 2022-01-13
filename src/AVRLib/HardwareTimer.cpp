@@ -6,6 +6,10 @@ ISR(TIMER##NUM##_COMPA_vect) {\
     AvrLib::TimerCounter##NUM##Interrupts<Main>::match##AN();\
 }\
 \
+ ISR(TIMER##NUM##_OVF_vect) {\
+    AvrLib::TimerNormal##NUM##Interrupts<Main>::overflow();\
+}\
+\
 ISR(TIMER##NUM##_COMPB_vect) {\
     AvrLib::TimerCounter##NUM##Interrupts<Main>::match##BN();\
 }\
@@ -15,7 +19,20 @@ ISR(TIMER##NUM##_COMPC_vect) {\
 }\
 \
 AvrLib::HardwareTimerPWM##NUM AvrLib::timerPWM##NUM = {};\
-AvrLib::HardwareTimerCounter##NUM AvrLib::timerCounter##NUM = {};\
+AvrLib::HardwareTimerCounter##NUM AvrLib::timerCounter##NUM = {}; \
+AvrLib::HardwareTimerNormal##NUM AvrLib::timerNormal##NUM = {}; \
+                                                         \
+void AvrLib::HardwareTimerNormal##NUM::enable() {\
+            if(timerNormal##NUM.isInited())                \
+            {                                       \
+                monitor.println("Timer " #NUM " already initialized as normal");\
+            } else if(!inited) {\
+                BitVal(TCCR##NUM##A).off<WGM##NUM##0, WGM##NUM##1>();\
+                BitVal(TCCR##NUM##B).off<WGM##NUM##2, WGM##NUM##3>();\
+                inited = true;                      \
+                monitor.println("Normal timer " #NUM " initialized");\
+            }\
+        }\
 \
 void AvrLib::HardwareTimerCounter##NUM::enable() {\
             if(timerPWM##NUM.isInited())                \

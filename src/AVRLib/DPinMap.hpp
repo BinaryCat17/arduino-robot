@@ -22,6 +22,7 @@ namespace AvrLib {
         D19,
         D20,
         D21,
+        D47,
         D49,
         D51,
     };
@@ -51,6 +52,8 @@ namespace AvrLib {
                 return PD0;
             case DPin::D49:
                 return PL0;
+            case DPin::D47:
+                return PL2;
             case DPin::D51:
                 return PB2;
             default:
@@ -66,7 +69,7 @@ namespace AvrLib {
             setBits<d, convertPin<p>()>(DDRB);
         } else if constexpr(p == DPin::D18 || p == DPin::D19 || p == DPin::D20 || p == DPin::D21) {
             setBits<d, convertPin<p>()>(DDRD);
-        } else if constexpr(p == DPin::D49) {
+        } else if constexpr(p == DPin::D49 || p == DPin::D47) {
             setBits<d, convertPin<p>()>(DDRL);
         } else {
             static_assert("pin is not digital");
@@ -81,7 +84,7 @@ namespace AvrLib {
             setBits<d, convertPin<p>()>(PORTB);
         } else if constexpr(p == DPin::D18 || p == DPin::D19 || p == DPin::D20 || p == DPin::D21) {
             setBits<d, convertPin<p>()>(PORTD);
-        } else if constexpr(p == DPin::D49) {
+        } else if constexpr(p == DPin::D49|| p == DPin::D47) {
             setBits<d, convertPin<p>()>(PORTL);
         } else {
             static_assert("pin is not digital");
@@ -96,7 +99,7 @@ namespace AvrLib {
             return getBit<convertPin<p>()>(PINB);
         } else if constexpr(p == DPin::D18 || p == DPin::D19 || p == DPin::D20 || p == DPin::D21) {
             return getBit<convertPin<p>()>(PIND);
-        } else if constexpr(p == DPin::D49) {
+        } else if constexpr(p == DPin::D49|| p == DPin::D47) {
             return getBit<convertPin<p>()>(PINL);
         } else {
             static_assert("pin is not digital");

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "stdint.h"
 #include "DeltaTimer.hpp"
 #include "PositionTrack.hpp"
 

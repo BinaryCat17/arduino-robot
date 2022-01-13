@@ -33,10 +33,11 @@ namespace AvrLib {
     public:
         template<ISRPin ipin, PinHandleMode mode>
         void enable() {
+            cli();
             constexpr DPin pin = static_cast<DPin>(ipin);
             pinDirection<PinIn, pin>();
             // подтяжка к питанию
-            //pinWrite<true, pin>();
+            pinWrite<true, pin>();
 
             auto constexpr inter = interNum<pin>();
             monitor.println("Enable inter ", inter);
@@ -47,6 +48,7 @@ namespace AvrLib {
             }
 
             setBits<true, INT0 + inter>(EIMSK);
+            sei();
         }
 
         template<ISRPin ipin>

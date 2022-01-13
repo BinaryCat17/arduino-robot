@@ -19,60 +19,64 @@ struct Position {
     int32_t y;
 };
 
-const int32_t wheelLen = 213;
-const double wheelbase = 200;
-const double wheelRadius = wheelbase / 2;
-const int32_t avgEnc = 2437;
+const double wheelLen = 210.04;
+const double wheelbase = 236;
+const double baseRadius = wheelbase / 2;
+
+//const float avgEnc = 2437;
+const float avgEnc = 1600; // Робот 1, 3
+
+template<typename T>
+T sign(T v) {
+    if (v > 0) {
+        return 1;
+    } else if (v < 0) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
 
 class PositionTrack {
 public:
     void enable();
 
-    void track() {
-        int32_t encCntL, encCntR;
+    void track();
 
-        ATOMIC_BLOCK(ATOMIC_FORCEON) {
-            encCntL = implEncCntL;
-            encCntR = implEncCntR;
-        }
+    float leftMovement() const
+    {
+        return mLeftMovement;
+    }
 
-        // для правого колеса
-        int32_t const moveR = (encCntR - prevEncCntR) * wheelLen / avgEnc;
-        double const rotationR = (double) moveR / wheelbase;
-        posX -= wheelRadius * sin(rotationR);
-        double const cosR = cos(rotationR);
-        posY += wheelRadius * (1 / cosR - 1) * cosR;
-        mRotationRadians += rotationR * 2;
-
-        // для левого колеса
-        int32_t const moveL = (encCntL - prevEncCntL) * wheelLen / avgEnc;
-        double const rotationL = (double) moveL / wheelbase;
-        posX += wheelRadius * sin(rotationL);
-        double const cosL = cos(rotationL);
-        posY += wheelRadius * (1 / cosL - 1) * cosL;
-        mRotationRadians -= rotationL * 2;
-
-        prevEncCntL = encCntL;
-        prevEncCntR = encCntR;
+    float rightMovement() const
+    {
+        return mRightMovement;
     }
 
     float rotationRadians() const {
         return (float) mRotationRadians;
     }
 
+    float rotationDegrees() const
+    {
+        return rotationRadians() / 0.0174533f;
+    }
+
     Position pos() const {
         return Position{
-                (int32_t) posX,
-                (int32_t) posY,
+                (int32_t) mPosX,
+                (int32_t) mPosY,
         };
     }
 
 private:
     double mRotationRadians = 0;
-    double posX = 0;
-    double posY = 0;
-    int32_t prevEncCntL = 0;
-    int32_t prevEncCntR = 0;
+    double mPosX = 0;
+    double mPosY = 0;
+    double mLeftMovement = 0;
+    double mRightMovement = 0;
+    int32_t mPrevEncCntL = 0;
+    int32_t mPrevEncCntR = 0;
 };
 
 extern PositionTrack location;
@@ -113,11 +117,11 @@ namespace AvrLib {
         }
 
         static void handle20() {
-            encoderChange<DPin::D20, DPin::D21>(implEncCntL, implEncMask2);
+            encoderChange<DPin::D21, DPin::D20>(implEncCntL, implEncMask2);
         }
 
         static void handle21() {
-            encoderChange<DPin::D20, DPin::D21>(implEncCntL, implEncMask2);
+            encoderChange<DPin::D21, DPin::D20>(implEncCntL, implEncMask2);
         }
     };
 }
