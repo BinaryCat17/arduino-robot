@@ -7,7 +7,7 @@
 #include "avr8-stub.h"
 #endif
 
-#define ENABLE_SERIAL
+//#define ENABLE_SERIAL
 #if defined(ENABLE_SERIAL)
 
 #include <HardwareSerial.h>

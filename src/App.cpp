@@ -9,7 +9,7 @@ void Main::setup() {
 
     //driver.fillL(100);
     //driver.fillR(100);
-    //driver.move(200);
+    driver.move(1000);
     //driver.rotate(90);
     //driver.rotate(0);
     //driver.rotate(-90);
