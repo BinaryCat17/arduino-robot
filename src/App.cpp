@@ -8,5 +8,5 @@ void Main::setup() {
 void Main::loop() {
     runner.run();
     Position const pos = location.pos();
-    monitor.println("X ", pos.x, " Y ", pos.y);
+    //monitor.println("X ", pos.x, " Y ", pos.y, "D ", distanceSensor.distanceMm());
 }

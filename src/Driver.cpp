@@ -17,15 +17,15 @@ void Driver::enable() {
         location.enable();
 
         // для робота 1
-        //mPidL.start(3.f, 0.000f, 0, 0, -50, 50);
-        //mPidR.start(3.f, 0.000f, 0, 0, -50, 50);
-        //mPidAngle.start(1.f, 0.0005f, 0, 0, -700, 700);
-        //mPidRatio.start(2.f, 0.0f, 0, 0, -15, 15);
+        mPidL.start(1.f, 0.000f, 0, 0, -50, 50);
+        mPidR.start(1.f, 0.000f, 0, 0, -50, 50);
+        mPidAngle.start(15.f, 0.0005f, 0, 0, -700, 700);
+        mPidRatio.start(2.f, 0.0f, 0, 0, -15, 15);
         // для калеки 5
-        mPidL.start(25.f, 0.000f, 0, 0, -70, 70);
-        mPidR.start(25.f, 0.000f, 0, 0, -70, 70);
-        mPidAngle.start(8.f, 0.005f, 0, 0, -700, 700);
-        mPidRatio.start(12.f, 0.0f, 0, 0, -25, 25);
+//        mPidL.start(25.f, 0.000f, 0, 0, -70, 70);
+//        mPidR.start(25.f, 0.000f, 0, 0, -70, 70);
+//        mPidAngle.start(8.f, 0.005f, 0, 0, -700, 700);
+//        mPidRatio.start(12.f, 0.0f, 0, 0, -25, 25);
 
         monitor.println("Driver enabled");
     });
@@ -84,7 +84,7 @@ void Driver::correct() {
 void Driver::rotate(float degrees) {
     speedL(0);
     speedR(0);
-    degrees *= 1.25; // для калеки номер 5
+    degrees *= 1.08; // для калеки номер 5
     float const ac = accelerationTime;
     accelerationTime = 0;
 

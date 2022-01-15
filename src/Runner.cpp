@@ -26,12 +26,12 @@ void Runner::run() {
 
     float rotation;
     float moveDistance;
-    if(distance <= 0.0f || distance >= 350)
+    if(distance <= 0.0f || distance >= sensorLen)
     {
         // если препятствия перед роботом нет, едем в сторону центра поля
-        rotation = -10;
+        rotation = 5;
         moveDistance = 300;
-    } else if(distance < 150)
+    } else if(distance < 180)
     {
         // если препятствие очень близко, поворачиваем на 90
         rotation = 90;
@@ -39,22 +39,22 @@ void Runner::run() {
     } else if(distance < 270)
     {
         // если есть достаточно места для манёвра, объезжаем препятствие под углом
-        rotation = 50;
-        moveDistance = 450;
+        rotation = 70;
+        moveDistance = 400;
     } else
     {
         // если места совсем много, то под небольшим углом
-        rotation = 40;
-        moveDistance = 550;
+        rotation = 45;
+        moveDistance = 500;
     }
 
     // если препятствие было сбоку от робота, то добавляем дополнительное расстояние
     // робот проедет меньше, если он собирался поворачивать в противоположную сторону от препятствия
     // или больше, если смотрел на препятствие
-    float const additionalMovement = 45 * dir;
-    float const additionalRotation = 15 * dir;
+    float const additionalMovement = 30 * dir;
+    float const additionalRotation = 7 * dir;
     float const movement = moveDistance + additionalMovement;
-    //rotation += additionalRotation;
+    //rotation -= additionalRotation;
 
     // если позиция робота левее центра, то он будет поворачиваться направо, чтобы
     // стать ближе к центру поля и наооборот
@@ -73,6 +73,8 @@ void Runner::run() {
 void Runner::scanObstacle(float rotation, int& side, float& distance) {
     // поворачиваем робот в каждую из сторон на угол checkAngle,
     // совершая при этом checkCount проверок на сторону
+    distance = 1000;
+    side = 0;
     for (int i = -checkCount; i <= checkCount; ++i) {
         driver.rotate(rotation - (i * checkAngle / checkCount));
         float const scannedDistance = distanceSensor.distanceMm();
@@ -80,9 +82,11 @@ void Runner::scanObstacle(float rotation, int& side, float& distance) {
         // игнорируем все препятствия находящиеся за пределами видимости
         if (scannedDistance < sensorLen) {
             // записываем на какой проверке робот увидел препятствие
-            side = i;
-            distance = scannedDistance;
-            return;
+            if(scannedDistance < distance)
+            {
+                side = i;
+                distance = scannedDistance;
+            }
         }
     }
 }

@@ -62,8 +62,8 @@ private:
     float mFactSumR = 0;
     float mDt = 0;
     float const maxSpeed = 50;
-    float const maxEngineDif = 25; // для калеки 5
-    // float const maxEngineDif = 25; // для робота 1
+    //float const maxEngineDif = 25; // для калеки 5
+     float const maxEngineDif = 15; // для робота 1
 
     template<DPin control, typename FF>
     void engineSpeed(float speed, FF fillFactor) {
