@@ -29,14 +29,14 @@ void Runner::run() {
     if(distance <= 0.0f || distance >= 350)
     {
         // если препятствия перед роботом нет, едем в сторону центра поля
-        rotation = 17;
+        rotation = -10;
         moveDistance = 300;
-    } else if(distance < 100)
+    } else if(distance < 150)
     {
         // если препятствие очень близко, поворачиваем на 90
         rotation = 90;
         moveDistance = 250;
-    } else if(distance < 200)
+    } else if(distance < 270)
     {
         // если есть достаточно места для манёвра, объезжаем препятствие под углом
         rotation = 50;
@@ -54,7 +54,7 @@ void Runner::run() {
     float const additionalMovement = 45 * dir;
     float const additionalRotation = 15 * dir;
     float const movement = moveDistance + additionalMovement;
-    rotation += additionalRotation;
+    //rotation += additionalRotation;
 
     // если позиция робота левее центра, то он будет поворачиваться направо, чтобы
     // стать ближе к центру поля и наооборот
