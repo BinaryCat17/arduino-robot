@@ -3,7 +3,7 @@
 В рамках проекта создан набор вспомогательных классов, алгоритм езды по линии и объезда препятствий.
 
 # Высокоуровневые классы
-
+Основаны на клкассах низкого уровня для взаимодействия с ATMega2560
 ## Класс Runner
 Алгоритм объезда и сканирования препятствий на поле для соревнований
 - [Runner.hpp](https://github.com/BinaryCat17/arduino-robot/blob/master/src/Runner.hpp)
@@ -41,6 +41,7 @@
 - [DeltaTimer.cpp](https://github.com/BinaryCat17/arduino-robot/blob/master/src/DeltaTimer.cpp)
 
 # Низкоуровневые классы
+Проект использует библиотеки Arduino только для UART. Всё управление роботом реализовано через библиотеки AVR только для ATMega2560
 ## Класс ADCController
 Высокоуровневый интерфейс для аналого-цифрового преобразователя
 - [ADCController.hpp](https://github.com/BinaryCat17/arduino-robot/blob/master/src/AVRLib/ADCController.hpp)
