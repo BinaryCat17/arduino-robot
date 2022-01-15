@@ -10,6 +10,21 @@ public:
         r = r_;
     }
 
+    void min(float v)
+    {
+        mMin = v;
+    }
+
+    void max(float v)
+    {
+        mMax = v;
+    }
+
+    void reset()
+    {
+        integral = 0;
+    }
+
     float calculate(float current, float dt);
 
 private:
@@ -21,8 +36,8 @@ private:
     float r;
 
     // границы скорости двигателя
-    float min;
-    float max;
+    float mMin;
+    float mMax;
 
     float integral;
     float prevErr;

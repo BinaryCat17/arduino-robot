@@ -19,10 +19,10 @@ float PIDRegulator::calculate(float current, float dt) {
     float output = Pout + Iout + Dout;
     prevErr = error;
 
-    if (output > max)
-        output = max;
-    else if (output < min)
-        output = min;
+    if (output > mMax)
+        output = mMax;
+    else if (output < mMin)
+        output = mMin;
 
     return output;
 }
@@ -33,8 +33,8 @@ PIDRegulator::start(float Kp_, float Ki_, float Kd_, float r_, float min_, float
     Ki = Ki_;
     Kd = Kd_;
     r = r_;
-    min = min_;
-    max = max_;
+    mMin = min_;
+    mMax = max_;
     integral = 0;
     prevErr = 0;
 }

@@ -23,8 +23,12 @@ const double wheelLen = 210.04;
 const double wheelbase = 236;
 const double baseRadius = wheelbase / 2;
 
-//const float avgEnc = 2437;
-const float avgEnc = 1600; // Робот 1, 3
+const float avgEncL = 2437;
+const float avgEncR = 2437;
+//const float avgEncL = 1500;// Робот 1
+//const float avgEncR = 1500; // Робот 1
+//const float avgEncL = 1490; // Робот 3
+//const float avgEncR = 1510; // Робот 3
 
 class PositionTrack {
 public:

@@ -6,8 +6,6 @@
 
 using namespace AvrLib;
 
-const double encMps = (10.0 / wheelLen) * avgEnc;
-
 class Driver {
 public:
     void enable();
@@ -42,6 +40,8 @@ public:
         mFactSumR = 0;
         mSumL = 0;
         mSumR = 0;
+        mTime = 0;
+        mPidAngle.reset();
     }
 
     void move(float len);
@@ -50,8 +50,10 @@ private:
     PIDRegulator mPidL = {};
     PIDRegulator mPidR = {};
     PIDRegulator mPidAngle = {};
-    PIDRegulator mPidDistance = {};
+    PIDRegulator mPidRatio = {};
 
+    float accelerationTime = 1500;
+    float mTime = 0;
     float mSpeedL = 0;
     float mSpeedR = 0;
     float mSumL = 0;
@@ -59,7 +61,9 @@ private:
     float mFactSumL = 0;
     float mFactSumR = 0;
     float mDt = 0;
-
+    float const maxSpeed = 50;
+    float const maxEngineDif = 25; // для калеки 5
+    // float const maxEngineDif = 25; // для робота 1
 
     template<DPin control, typename FF>
     void engineSpeed(float speed, FF fillFactor) {

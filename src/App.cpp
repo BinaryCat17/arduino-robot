@@ -1,28 +1,12 @@
 #include "App.hpp"
-#include "DistanceSensor.hpp"
-#include "Driver.hpp"
+#include "Runner.hpp"
 
 void Main::setup() {
-    location.enable();
-    distanceSensor.enable();
-    driver.enable();
-
-    //driver.fillL(100);
-    //driver.fillR(100);
-    driver.move(1000);
-    //driver.rotate(90);
-    //driver.rotate(0);
-    //driver.rotate(-90);
-    //driver.speedL(0);
-    //driver.speedR(0);
-    //driver.rotate(0);
-    //driver.rotate(-90);
+    runner.enable();
 }
 
 void Main::loop() {
-    //driver.correct();
-    float const angle = location.rotationRadians() * 180 / (2 * 3.1415926535f);
+    runner.run();
     Position const pos = location.pos();
-    monitor.println("L ", pos.x, " R ", pos.y, " D", distanceSensor.distanceMm(), " mm ", "A",
-            angle);
+    monitor.println("X ", pos.x, " Y ", pos.y);
 }
